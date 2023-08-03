@@ -109,13 +109,12 @@ public class CartResponse {
     public static class UpdateDTO {
         private List<CartDTO> carts;
         private int totalPrice;
-
         public UpdateDTO(List<Cart> cartList) {
-            this.carts = cartList.stream().map(CartDTO::new).collect(Collectors.toList());
-            this.totalPrice = cartList.stream().mapToInt(cart -> cart.getPrice()).sum();
+            this.carts =
+                    cartList.stream().map(CartDTO::new).collect(Collectors.toList());
+            this.totalPrice = cartList.stream().mapToInt(cart ->
+                    cart.getPrice()).sum();
         }
-
-
         @Getter
         @Setter
         public class CartDTO {
@@ -124,7 +123,6 @@ public class CartResponse {
             private String optionName;
             private int quantity;
             private int price;
-
             public CartDTO(Cart cart) {
                 this.cartId = cart.getId();
                 this.optionId = cart.getOption().getId();
@@ -134,5 +132,4 @@ public class CartResponse {
             }
         }
     }
-
 }
