@@ -18,7 +18,8 @@ public class OrderResponse {
         private int id;
         private List<ProductDTO> products;
         private int totalPrice;
-        public SaveDTO(List<Cart> cartList){
+        public SaveDTO(Order order, List<Cart> cartList){
+            this.id = order.getId();
             this.products = cartList.stream()
                     .map(c -> c.getOption().getProduct()).distinct()
                     .map(p -> new ProductDTO(p, cartList.stream()

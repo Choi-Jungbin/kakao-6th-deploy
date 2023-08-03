@@ -40,7 +40,7 @@ public class OrderService {
         }
         cartJPARepository.deleteByUserId(user.getId());
 
-        return new OrderResponse.SaveDTO(cartList);
+        return new OrderResponse.SaveDTO(order, cartList);
     }
 
     @Transactional
