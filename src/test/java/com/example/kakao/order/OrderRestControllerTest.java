@@ -2,6 +2,7 @@ package com.example.kakao.order;
 
 import com.example.kakao.MyRestDoc;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -13,7 +14,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @ActiveProfiles("test")
 @Sql(value = "classpath:db/teardown.sql")
 @AutoConfigureMockMvc
@@ -67,6 +70,25 @@ public class OrderRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.products[0].items[0].price").value(50000));
         resultActions.andExpect(jsonPath("$.response.products[0].items[0].quantity").value(5));
         resultActions.andExpect(jsonPath("$.response.totalPrice").value(310900));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void findByIdFail_test() throws Exception {
+        // given
+        int id = 2;
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                get("/orders/" + id)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpect(status().isNotFound());
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

@@ -99,7 +99,7 @@ public class CartService {
                 }
             }
             if(check){
-                throw new Exception400("해당 장바구니를 찾을 수 없습니다: " + updateDTO.getCartId());
+                throw new Exception404("해당 장바구니를 찾을 수 없습니다: " + updateDTO.getCartId());
             }
         }
 
