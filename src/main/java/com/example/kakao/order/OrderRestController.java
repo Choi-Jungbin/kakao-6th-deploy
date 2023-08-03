@@ -29,7 +29,7 @@ public class OrderRestController {
     // (기능10) 주문 결과 확인 GET
     // /orders/{id}
     @GetMapping("/orders/{id}")
-    public ResponseEntity<?> findById(@PathVariable @Min(1) int id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> findById(@PathVariable @Min(0) int id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         OrderResponse.FindByIdDTO responseDTO = orderService.findById(id, userDetails.getUser());
         return ResponseEntity.ok(ApiUtils.success(responseDTO));
     }
