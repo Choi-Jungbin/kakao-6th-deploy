@@ -42,10 +42,15 @@ public class CartService {
                     .orElseThrow(() -> new Exception404("해당 옵션을 찾을 수 없습니다 : " + optionId));
             cartJPARepository.findByOptionIdAndUserId(optionId, sessionUser.getId())
                     .ifPresentOrElse(
-                            c -> c.update(c.getQuantity()+quantity, c.getPrice() + c.getOption().getPrice()*quantity),
+                            c -> updateCart(c, quantity),
                             () -> {
                                 int price = optionPS.getPrice() * quantity;
-                                Cart cart = Cart.builder().user(sessionUser).option(optionPS).quantity(quantity).price(price).build();
+                                Cart cart = Cart.builder()
+                                        .user(sessionUser)
+                                        .option(optionPS)
+                                        .quantity(quantity)
+                                        .price(price)
+                                        .build();
                                 cartJPARepository.save(cart);
                             }
                     );
@@ -89,9 +94,11 @@ public class CartService {
             boolean check = true;
             for (Cart cart : cartList) {
                 if (cart.getId() == updateDTO.getCartId()) {
-                    cart.update(updateDTO.getQuantity(), cart.getOption().getPrice() * updateDTO.getQuantity());
+                    int quantity = updateDTO.getQuantity();
+                    cart.update(quantity, calcPrice(cart, quantity));
+
                     // 수량이 0이면 장바구니 삭제
-                    if(updateDTO.getQuantity() == 0){
+                    if(quantity == 0){
                         cartJPARepository.delete(cart);
                     }
                     check = false;
@@ -105,4 +112,12 @@ public class CartService {
 
         return new CartResponse.UpdateDTO(cartList);
     } // 더티체킹
+
+    public void updateCart(Cart cart, int quantity){
+        cart.update(cart.getQuantity() + quantity, cart.getPrice() + calcPrice(cart, quantity));
+    }
+
+    public int calcPrice(Cart cart, int quantity){
+        return cart.getOption().getPrice() * quantity;
+    }
 }
